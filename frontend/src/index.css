@@ -96,3 +96,52 @@ button:focus-visible {
         background-color: #f9f9f9;
     }
 }
+
+@import './styles/modern-animations.css';
+@import './styles/tailwind.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI',
+        'Roboto', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    background: #0f0b1f;
+    color: white;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+::selection {
+    background: rgba(168, 85, 247, 0.3);
+    color: white;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(30, 14, 62, 0.5);
+}
+
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, #a855f7 0%, #ec4899 100%);
+    border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, #ec4899 0%, #a855f7 100%);
+}
