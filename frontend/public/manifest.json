@@ -1,0 +1,29 @@
+{
+    "short_name": "StudenCal",
+    "name": "StudenCal - Student Productivity Hub",
+    "description": "The ultimate productivity app for students",
+    "icons": [
+        {
+            "src": "/vite.svg",
+            "sizes": "64x64 32x32 24x24 16x16",
+            "type": "image/x-icon"
+        },
+        {
+            "src": "/vite.svg",
+            "type": "image/svg+xml",
+            "sizes": "192x192",
+            "purpose": "any maskable"
+        },
+        {
+            "src": "/vite.svg",
+            "type": "image/svg+xml",
+            "sizes": "512x512",
+            "purpose": "any maskable"
+        }
+    ],
+    "start_url": ".",
+    "display": "standalone",
+    "theme_color": "#8b5cf6",
+    "background_color": "#0f0b1f",
+    "orientation": "portrait"
+}
