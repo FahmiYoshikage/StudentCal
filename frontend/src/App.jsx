@@ -6,6 +6,8 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { NotificationProvider } from './contexts/NotificationContext';
+import { CoursesPage, EventsPage } from './components/pages/CoursesPage';
+// Import forms & contexts
 
 // Modern Pages
 import ModernLandingPage from './components/pages/ModernLandingPage';
