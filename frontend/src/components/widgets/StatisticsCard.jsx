@@ -1,3 +1,5 @@
+import React from 'react';
+
 // ============================================
 // StatisticsCard Component
 // ============================================
@@ -31,5 +33,4 @@ const StatisticsCard = ({ icon, label, value, color, trend }) => {
     );
 };
 
-export { CoursesPage, EventsPage, StatisticsCard };
-export default CoursesPage;
+export default StatisticsCard;

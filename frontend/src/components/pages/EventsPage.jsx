@@ -1,3 +1,8 @@
+import React, { useState, useEffect } from 'react';
+import { useNotification } from '../../contexts/NotificationContext.jsx';
+import Loading from '../shared/Loading';
+import ErrorMessage from '../shared/ErrorMessage';
+
 // ============================================
 // EventsPage Component
 // ============================================
@@ -106,3 +111,5 @@ const EventsPage = () => {
         </div>
     );
 };
+
+export default EventsPage;

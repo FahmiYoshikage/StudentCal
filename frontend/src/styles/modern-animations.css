@@ -22,15 +22,74 @@
 @keyframes float {
     0%,
     100% {
-        transform: translateY(0px);
+        transform: translateY(0px) translateX(0px);
+    }
+    25% {
+        transform: translateY(-20px) translateX(10px);
     }
     50% {
-        transform: translateY(-20px);
+        transform: translateY(-40px) translateX(-10px);
+    }
+    75% {
+        transform: translateY(-20px) translateX(10px);
     }
 }
 
 .animate-float {
-    animation: float 3s ease-in-out infinite;
+    animation: float 20s ease-in-out infinite;
+}
+
+/* Shooting Star Animation */
+@keyframes shooting-star {
+    0% {
+        transform: translateX(0) translateY(0) rotate(-45deg);
+        opacity: 1;
+    }
+    70% {
+        opacity: 1;
+    }
+    100% {
+        transform: translateX(300px) translateY(300px) rotate(-45deg);
+        opacity: 0;
+    }
+}
+
+.animate-shooting-star {
+    animation: shooting-star 3s ease-out infinite;
+    box-shadow: 0 0 10px 2px rgba(255, 255, 255, 0.8);
+}
+
+.animate-shooting-star::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100px;
+    height: 1px;
+    background: linear-gradient(90deg, white, transparent);
+    transform: translateX(-100px);
+}
+
+/* Floating Particle Animation */
+@keyframes float-particle {
+    0% {
+        transform: translateY(0) translateX(0) scale(1);
+        opacity: 0;
+    }
+    10% {
+        opacity: 1;
+    }
+    90% {
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(-100vh) translateX(50px) scale(0);
+        opacity: 0;
+    }
+}
+
+.animate-float-particle {
+    animation: float-particle 20s linear infinite;
 }
 
 /* Slide Down Animation */
@@ -453,4 +512,33 @@
         backdrop-filter: none;
         border: 1px solid #ccc;
     }
+}
+
+@keyframes slide-down {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-slide-down {
+    animation: slide-down 0.3s ease-out;
+}
+@keyframes slide-up {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-slide-up {
+    animation: slide-up 0.3s ease-out;
 }

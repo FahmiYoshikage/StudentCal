@@ -1,293 +1,468 @@
-// components/layout/ModernNavbar.jsx
+// components/pages/ModernDashboard.jsx
 import React, { useState, useEffect } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import { useAuthContext } from '../../contexts/AuthContext.jsx';
 import axios from 'axios';
+import ModernNavbar from '../layout/ModernNavbar';
+import PomodoroTimer from '../widgets/PomodoroTimer';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
-export default function ModernNavbar() {
-    const [user, setUser] = useState(null);
-    const [isMenuOpen, setIsMenuOpen] = useState(false);
-    const [scrolled, setScrolled] = useState(false);
-    const location = useLocation();
+export default function ModernDashboard() {
     const navigate = useNavigate();
+    const { user, logout } = useAuthContext();
+
+    const [stats, setStats] = useState({
+        totalCourses: 0,
+        pendingTasks: 0,
+        upcomingEvents: 0,
+        averageGrade: 0,
+    });
+    const [upcomingTasks, setUpcomingTasks] = useState([]);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        fetchUser();
-
-        const handleScroll = () => {
-            setScrolled(window.scrollY > 20);
-        };
-
-        window.addEventListener('scroll', handleScroll);
-        return () => window.removeEventListener('scroll', handleScroll);
+        fetchDashboardData();
     }, []);
 
-    const fetchUser = async () => {
+    const fetchDashboardData = async () => {
         try {
-            const response = await axios.get(`${API_URL}/auth/me`, {
-                withCredentials: true,
+            setLoading(true);
+
+            // Mock data for now (backend not running)
+            // TODO: Replace with actual API calls when backend is ready
+
+            // Simulate API delay
+            await new Promise((resolve) => setTimeout(resolve, 500));
+
+            // Mock data
+            setStats({
+                totalCourses: 6,
+                pendingTasks: 12,
+                upcomingEvents: 5,
+                averageGrade: 3.75,
             });
-            setUser(response.data);
-        } catch (error) {
-            console.error('Error fetching user:', error);
-        }
-    };
 
-    const handleLogout = async () => {
-        try {
-            await axios.post(
-                `${API_URL}/auth/logout`,
-                {},
+            setUpcomingTasks([
                 {
-                    withCredentials: true,
-                }
-            );
-            navigate('/');
+                    title: 'Complete Data Structures Assignment',
+                    deadline: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000),
+                    courseId: { courseName: 'Data Structures' },
+                    subtasks: [
+                        { completed: true },
+                        { completed: true },
+                        { completed: false },
+                        { completed: false },
+                    ],
+                    subtaskProgress: {
+                        completed: 2,
+                        total: 4,
+                        percentage: 50,
+                    },
+                },
+                {
+                    title: 'Prepare Calculus Presentation',
+                    deadline: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
+                    courseId: { courseName: 'Calculus II' },
+                    subtasks: [{ completed: true }, { completed: false }],
+                    subtaskProgress: {
+                        completed: 1,
+                        total: 2,
+                        percentage: 50,
+                    },
+                },
+                {
+                    title: 'Study for Physics Quiz',
+                    deadline: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000),
+                    courseId: { courseName: 'Physics' },
+                    subtasks: [],
+                    subtaskProgress: null,
+                },
+            ]);
+
+            setLoading(false);
         } catch (error) {
-            console.error('Error logging out:', error);
+            console.error('Error fetching dashboard data:', error);
+            // Set mock data even on error (for development)
+            setStats({
+                totalCourses: 6,
+                pendingTasks: 12,
+                upcomingEvents: 5,
+                averageGrade: 3.75,
+            });
+            setLoading(false);
         }
     };
 
-    const navItems = [
-        { path: '/dashboard', label: 'Dashboard', icon: '🏠' },
-        { path: '/courses', label: 'Courses', icon: '🎓' },
-        { path: '/tasks', label: 'Tasks', icon: '✓' },
-        { path: '/exams', label: 'Exams', icon: '🎯' },
-        { path: '/grades', label: 'Grades', icon: '📊' },
-        { path: '/finance', label: 'Finance', icon: '💰' },
-        { path: '/habits', label: 'Habits', icon: '🔥' },
-        { path: '/events', label: 'Events', icon: '📅' },
-    ];
-
-    const isActive = (path) => location.pathname === path;
+    if (loading) {
+        return (
+            <div className="min-h-screen bg-gradient-to-br from-[#0f0b1f] via-[#1a0e3e] to-[#2d1b5e] flex items-center justify-center">
+                <div className="text-center">
+                    <div className="w-16 h-16 border-4 border-purple-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+                    <p className="text-purple-300 text-lg">
+                        Loading your universe...
+                    </p>
+                </div>
+            </div>
+        );
+    }
 
     return (
-        <>
-            {/* Main Navbar */}
-            <nav
-                className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-                    scrolled
-                        ? 'bg-purple-900/30 backdrop-blur-xl border-b border-purple-500/20'
-                        : 'bg-transparent'
-                }`}
-            >
-                <div className="container mx-auto px-6">
-                    <div className="flex items-center justify-between h-20">
-                        {/* Logo */}
-                        <button
-                            onClick={() => navigate('/dashboard')}
-                            className="flex items-center space-x-3 group"
-                        >
-                            <div className="relative">
-                                <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl flex items-center justify-center transform group-hover:rotate-12 transition-all">
-                                    <span className="text-2xl">📚</span>
-                                </div>
-                                <div className="absolute inset-0 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl blur-xl opacity-0 group-hover:opacity-50 transition-opacity" />
-                            </div>
-                            <div className="hidden md:block">
-                                <h1 className="text-xl font-black bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
-                                    StudenCal
-                                </h1>
-                                <p className="text-xs text-gray-500">
-                                    Productivity Hub
-                                </p>
-                            </div>
-                        </button>
+        <div className="min-h-screen bg-gradient-to-br from-[#0f0b1f] via-[#1a0e3e] to-[#2d1b5e]">
+            {/* Animated Background */}
+            <div className="fixed inset-0 overflow-hidden pointer-events-none">
+                <div className="absolute w-96 h-96 rounded-full bg-purple-600 opacity-10 blur-3xl top-0 left-0 animate-pulse" />
+                <div className="absolute w-96 h-96 rounded-full bg-pink-600 opacity-10 blur-3xl bottom-0 right-0 animate-pulse" />
+                <div className="absolute w-72 h-72 rounded-full bg-blue-600 opacity-10 blur-3xl top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 animate-pulse" />
+            </div>
 
-                        {/* Desktop Navigation */}
-                        <div className="hidden lg:flex items-center space-x-2">
-                            {navItems.map((item) => (
-                                <button
-                                    key={item.path}
-                                    onClick={() => navigate(item.path)}
-                                    className={`group relative px-4 py-2 rounded-xl transition-all ${
-                                        isActive(item.path)
-                                            ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg shadow-purple-500/50'
-                                            : 'text-gray-400 hover:text-white hover:bg-white/5'
-                                    }`}
-                                >
-                                    <span className="flex items-center">
-                                        <span
-                                            className={`text-lg mr-2 ${
-                                                isActive(item.path)
-                                                    ? 'animate-bounce'
-                                                    : ''
-                                            }`}
+            {/* Navbar - Use shared component */}
+            <ModernNavbar user={user} onLogout={logout} />
+
+            {/* Main Content - CENTERED */}
+            <main className="relative z-10 pt-20 pb-12 px-4 sm:px-6 lg:px-8">
+                <div className="w-full max-w-7xl mx-auto space-y-8">
+                    {/* Welcome Section - CENTERED */}
+                    <div className="text-center space-y-2">
+                        <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-white">
+                            Welcome back,{' '}
+                            <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+                                {user?.name?.split(' ')[0] || 'Student'}
+                            </span>
+                            ! 👋
+                        </h2>
+                        <p className="text-gray-400 text-lg">
+                            Here's what's happening with your studies today
+                        </p>
+                    </div>
+
+                    {/* Stats Cards - CENTERED */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
+                        {[
+                            {
+                                label: 'Active Courses',
+                                value: stats.totalCourses,
+                                icon: '🎓',
+                                color: 'from-purple-600 to-pink-600',
+                                bgColor: 'from-purple-900/20 to-pink-900/20',
+                            },
+                            {
+                                label: 'Pending Tasks',
+                                value: stats.pendingTasks,
+                                icon: '📝',
+                                color: 'from-blue-600 to-cyan-600',
+                                bgColor: 'from-blue-900/20 to-cyan-900/20',
+                            },
+                            {
+                                label: 'Upcoming Events',
+                                value: stats.upcomingEvents,
+                                icon: '📅',
+                                color: 'from-pink-600 to-purple-600',
+                                bgColor: 'from-pink-900/20 to-purple-900/20',
+                            },
+                            {
+                                label: 'Average GPA',
+                                value: stats.averageGrade,
+                                icon: '⭐',
+                                color: 'from-yellow-600 to-orange-600',
+                                bgColor: 'from-yellow-900/20 to-orange-900/20',
+                            },
+                        ].map((stat, i) => (
+                            <div
+                                key={i}
+                                className={`group relative bg-gradient-to-br ${stat.bgColor} backdrop-blur-sm rounded-2xl p-6 border border-purple-500/20 hover:border-purple-500/50 transition-all duration-300 hover:scale-105 hover:shadow-2xl overflow-hidden`}
+                            >
+                                {/* Glow effect */}
+                                <div
+                                    className={`absolute inset-0 bg-gradient-to-br ${stat.color} opacity-0 group-hover:opacity-10 blur-xl transition-opacity duration-300`}
+                                />
+
+                                <div className="relative z-10">
+                                    <div className="flex items-center justify-between mb-4">
+                                        <div
+                                            className={`w-12 h-12 bg-gradient-to-br ${stat.color} rounded-xl flex items-center justify-center text-2xl transform group-hover:scale-110 group-hover:rotate-12 transition-all duration-300`}
                                         >
-                                            {item.icon}
-                                        </span>
-                                        <span className="font-medium">
-                                            {item.label}
-                                        </span>
-                                    </span>
+                                            {stat.icon}
+                                        </div>
+                                    </div>
 
-                                    {/* Active Indicator */}
-                                    {isActive(item.path) && (
-                                        <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 bg-white rounded-full" />
-                                    )}
-                                </button>
-                            ))}
-                        </div>
+                                    <div
+                                        className={`text-4xl font-black bg-gradient-to-r ${stat.color} bg-clip-text text-transparent mb-2`}
+                                    >
+                                        {stat.value}
+                                    </div>
 
-                        {/* Right Side - User & Actions */}
-                        <div className="flex items-center space-x-4">
-                            {/* Notifications */}
-                            <button className="relative p-3 bg-white/5 hover:bg-white/10 rounded-xl transition-all hover:scale-110">
-                                <span className="text-xl">🔔</span>
-                                <div className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full animate-pulse" />
-                            </button>
+                                    <div className="text-gray-400 text-sm font-medium">
+                                        {stat.label}
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
 
-                            {/* User Menu */}
-                            <div className="relative group">
-                                <button className="flex items-center space-x-3 bg-white/5 hover:bg-white/10 rounded-full px-4 py-2 transition-all">
-                                    {user?.avatarUrl ? (
-                                        <img
-                                            src={user.avatarUrl}
-                                            alt="Avatar"
-                                            className="w-10 h-10 rounded-full ring-2 ring-purple-500/50"
-                                        />
-                                    ) : (
-                                        <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center text-white font-bold">
-                                            {user?.displayName?.charAt(0) ||
-                                                'U'}
+                    {/* Main Grid - CENTERED */}
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
+                        {/* Today's Focus */}
+                        <div className="lg:col-span-2 space-y-8">
+                            <div className="bg-gradient-to-br from-purple-900/20 to-pink-900/20 backdrop-blur-sm rounded-2xl p-6 border border-purple-500/20">
+                                <div className="flex items-center justify-between mb-6">
+                                    <h3 className="text-2xl font-bold text-white flex items-center">
+                                        <span className="mr-3">🎯</span>
+                                        Today's Focus
+                                    </h3>
+                                    <button
+                                        onClick={() => navigate('/tasks')}
+                                        className="text-purple-400 hover:text-purple-300 text-sm transition-colors"
+                                    >
+                                        View All →
+                                    </button>
+                                </div>
+
+                                <div className="space-y-4">
+                                    {upcomingTasks
+                                        .slice(0, 3)
+                                        .map((task, i) => (
+                                            <div
+                                                key={i}
+                                                className="group bg-gradient-to-r from-purple-800/20 to-pink-800/20 rounded-xl p-4 border border-purple-500/20 hover:border-purple-500/50 transition-all duration-300 hover:scale-[1.02]"
+                                            >
+                                                <div className="flex items-start justify-between">
+                                                    <div className="flex-1">
+                                                        <h4 className="text-white font-semibold mb-2 group-hover:text-purple-400 transition-colors">
+                                                            {task.title}
+                                                        </h4>
+                                                        {task.courseId && (
+                                                            <span className="inline-block px-3 py-1 bg-purple-600/30 rounded-full text-purple-300 text-xs">
+                                                                {
+                                                                    task
+                                                                        .courseId
+                                                                        .courseName
+                                                                }
+                                                            </span>
+                                                        )}
+                                                    </div>
+                                                    <div className="text-right">
+                                                        <div className="text-sm text-gray-400 mb-1">
+                                                            Deadline
+                                                        </div>
+                                                        <div className="text-purple-300 font-semibold text-sm">
+                                                            {new Date(
+                                                                task.deadline
+                                                            ).toLocaleDateString(
+                                                                'en-US',
+                                                                {
+                                                                    month: 'short',
+                                                                    day: 'numeric',
+                                                                }
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                {task.subtaskProgress && (
+                                                    <div className="mt-3">
+                                                        <div className="flex items-center justify-between text-xs text-gray-400 mb-1">
+                                                            <span>
+                                                                Progress
+                                                            </span>
+                                                            <span>
+                                                                {
+                                                                    task
+                                                                        .subtaskProgress
+                                                                        .completed
+                                                                }
+                                                                /
+                                                                {
+                                                                    task
+                                                                        .subtaskProgress
+                                                                        .total
+                                                                }{' '}
+                                                                (
+                                                                {
+                                                                    task
+                                                                        .subtaskProgress
+                                                                        .percentage
+                                                                }
+                                                                %)
+                                                            </span>
+                                                        </div>
+                                                        <div className="h-2 bg-purple-900/30 rounded-full overflow-hidden">
+                                                            <div
+                                                                className="h-full bg-gradient-to-r from-purple-500 to-pink-500 rounded-full transition-all duration-500 ease-out"
+                                                                style={{
+                                                                    width: `${task.subtaskProgress.percentage}%`,
+                                                                }}
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        ))}
+
+                                    {upcomingTasks.length === 0 && (
+                                        <div className="text-center py-12">
+                                            <div className="text-6xl mb-4">
+                                                🎉
+                                            </div>
+                                            <p className="text-gray-400">
+                                                No pending tasks! Great job!
+                                            </p>
                                         </div>
                                     )}
-                                    <div className="hidden md:block text-left">
-                                        <p className="text-white text-sm font-semibold">
-                                            {user?.displayName?.split(' ')[0] ||
-                                                'Student'}
-                                        </p>
-                                        <p className="text-gray-400 text-xs">
-                                            Free Plan
-                                        </p>
-                                    </div>
-                                    <svg
-                                        className="w-4 h-4 text-gray-400 group-hover:rotate-180 transition-transform"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        viewBox="0 0 24 24"
-                                    >
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            strokeWidth={2}
-                                            d="M19 9l-7 7-7-7"
-                                        />
-                                    </svg>
-                                </button>
-
-                                {/* Dropdown Menu */}
-                                <div className="absolute right-0 mt-2 w-56 bg-purple-900/95 backdrop-blur-xl rounded-xl border border-purple-500/20 shadow-2xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all">
-                                    <div className="p-4 border-b border-purple-500/20">
-                                        <p className="text-white font-semibold">
-                                            {user?.displayName || 'Student'}
-                                        </p>
-                                        <p className="text-gray-400 text-sm truncate">
-                                            {user?.email}
-                                        </p>
-                                    </div>
-
-                                    <div className="p-2">
-                                        <button className="w-full text-left px-4 py-2 text-gray-300 hover:bg-white/10 rounded-lg transition-all flex items-center">
-                                            <span className="mr-3">⚙️</span>
-                                            Settings
-                                        </button>
-                                        <button className="w-full text-left px-4 py-2 text-gray-300 hover:bg-white/10 rounded-lg transition-all flex items-center">
-                                            <span className="mr-3">🎨</span>
-                                            Theme
-                                        </button>
-                                        <button className="w-full text-left px-4 py-2 text-gray-300 hover:bg-white/10 rounded-lg transition-all flex items-center">
-                                            <span className="mr-3">💎</span>
-                                            Upgrade
-                                        </button>
-                                    </div>
-
-                                    <div className="p-2 border-t border-purple-500/20">
-                                        <button
-                                            onClick={handleLogout}
-                                            className="w-full text-left px-4 py-2 text-red-400 hover:bg-red-500/10 rounded-lg transition-all flex items-center"
-                                        >
-                                            <span className="mr-3">🚪</span>
-                                            Logout
-                                        </button>
-                                    </div>
                                 </div>
                             </div>
 
-                            {/* Mobile Menu Toggle */}
-                            <button
-                                onClick={() => setIsMenuOpen(!isMenuOpen)}
-                                className="lg:hidden p-3 bg-white/5 hover:bg-white/10 rounded-xl transition-all"
-                            >
-                                <svg
-                                    className="w-6 h-6 text-white"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    viewBox="0 0 24 24"
-                                >
-                                    {isMenuOpen ? (
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            strokeWidth={2}
-                                            d="M6 18L18 6M6 6l12 12"
-                                        />
-                                    ) : (
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            strokeWidth={2}
-                                            d="M4 6h16M4 12h16M4 18h16"
-                                        />
-                                    )}
-                                </svg>
-                            </button>
+                            {/* Weekly Activity Chart */}
+                            <div className="bg-gradient-to-br from-blue-900/20 to-cyan-900/20 backdrop-blur-sm rounded-2xl p-6 border border-blue-500/20">
+                                <h3 className="text-2xl font-bold text-white mb-6 flex items-center">
+                                    <span className="mr-3">📈</span>
+                                    Weekly Activity
+                                </h3>
+
+                                <div className="flex items-end justify-between h-48">
+                                    {[
+                                        { day: 'Mon', height: 60 },
+                                        { day: 'Tue', height: 80 },
+                                        { day: 'Wed', height: 70 },
+                                        { day: 'Thu', height: 90 },
+                                        { day: 'Fri', height: 85 },
+                                        { day: 'Sat', height: 50 },
+                                        { day: 'Sun', height: 40 },
+                                    ].map((item, i) => (
+                                        <div
+                                            key={i}
+                                            className="flex-1 flex flex-col items-center"
+                                        >
+                                            <div
+                                                className="w-full px-1 flex items-end justify-center mb-2"
+                                                style={{ height: '12rem' }}
+                                            >
+                                                <div
+                                                    className="w-full bg-gradient-to-t from-blue-600 to-cyan-600 rounded-t-lg hover:scale-110 transition-transform duration-300 cursor-pointer"
+                                                    style={{
+                                                        height: `${item.height}%`,
+                                                    }}
+                                                />
+                                            </div>
+                                            <div className="text-xs text-gray-400 font-medium">
+                                                {item.day}
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Quick Actions & Upcoming Exams */}
+                        <div className="space-y-8">
+                            {/* Quick Actions */}
+                            <div className="bg-gradient-to-br from-purple-900/20 to-pink-900/20 backdrop-blur-sm rounded-2xl p-6 border border-purple-500/20">
+                                <h3 className="text-xl font-bold text-white mb-4">
+                                    Quick Actions
+                                </h3>
+                                <div className="space-y-3">
+                                    {[
+                                        {
+                                            icon: '📚',
+                                            label: 'Add Course',
+                                            path: '/courses',
+                                            color: 'from-purple-600 to-pink-600',
+                                        },
+                                        {
+                                            icon: '✓',
+                                            label: 'New Task',
+                                            path: '/tasks',
+                                            color: 'from-blue-600 to-cyan-600',
+                                        },
+                                        {
+                                            icon: '💰',
+                                            label: 'Add Transaction',
+                                            path: '/finance',
+                                            color: 'from-green-600 to-emerald-600',
+                                        },
+                                        {
+                                            icon: '🎯',
+                                            label: 'Schedule Exam',
+                                            path: '/exams',
+                                            color: 'from-red-600 to-pink-600',
+                                        },
+                                    ].map((action, i) => (
+                                        <button
+                                            key={i}
+                                            onClick={() =>
+                                                navigate(action.path)
+                                            }
+                                            className={`w-full group bg-gradient-to-r ${action.color} rounded-xl p-4 text-white font-semibold hover:scale-105 transition-all duration-300 hover:shadow-lg flex items-center justify-between`}
+                                        >
+                                            <span className="flex items-center">
+                                                <span className="text-2xl mr-3">
+                                                    {action.icon}
+                                                </span>
+                                                {action.label}
+                                            </span>
+                                            <svg
+                                                className="w-5 h-5 group-hover:translate-x-1 transition-transform"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                viewBox="0 0 24 24"
+                                            >
+                                                <path
+                                                    strokeLinecap="round"
+                                                    strokeLinejoin="round"
+                                                    strokeWidth={2}
+                                                    d="M9 5l7 7-7 7"
+                                                />
+                                            </svg>
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Upcoming Exams */}
+                            <div className="bg-gradient-to-br from-red-900/20 to-pink-900/20 backdrop-blur-sm rounded-2xl p-6 border border-red-500/20">
+                                <h3 className="text-xl font-bold text-white mb-4 flex items-center">
+                                    <span className="mr-2">🎯</span>
+                                    Upcoming Exams
+                                </h3>
+                                <div className="space-y-3">
+                                    {[
+                                        {
+                                            title: 'Midterm Exam',
+                                            course: 'Data Structures',
+                                            days: 3,
+                                        },
+                                        {
+                                            title: 'Final Exam',
+                                            course: 'Calculus II',
+                                            days: 7,
+                                        },
+                                    ].map((exam, i) => (
+                                        <div
+                                            key={i}
+                                            className="bg-gradient-to-r from-red-800/20 to-pink-800/20 rounded-xl p-4 border border-red-500/20 hover:border-red-500/50 transition-all duration-300"
+                                        >
+                                            <div className="flex items-start justify-between mb-2">
+                                                <h4 className="text-white font-semibold text-sm">
+                                                    {exam.title}
+                                                </h4>
+                                                <span className="px-2 py-1 bg-red-600 text-white text-xs rounded-full font-bold">
+                                                    H-{exam.days}
+                                                </span>
+                                            </div>
+                                            <p className="text-gray-400 text-xs">
+                                                {exam.course}
+                                            </p>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </nav>
+            </main>
 
-            {/* Mobile Menu */}
-            {isMenuOpen && (
-                <div className="fixed inset-0 z-40 lg:hidden">
-                    {/* Backdrop */}
-                    <div
-                        className="absolute inset-0 bg-black/70 backdrop-blur-sm"
-                        onClick={() => setIsMenuOpen(false)}
-                    />
-
-                    {/* Menu Panel */}
-                    <div className="absolute top-20 right-0 left-0 mx-4 bg-purple-900/95 backdrop-blur-xl rounded-2xl border border-purple-500/20 shadow-2xl p-4 animate-slide-down">
-                        <div className="space-y-2">
-                            {navItems.map((item) => (
-                                <button
-                                    key={item.path}
-                                    onClick={() => {
-                                        navigate(item.path);
-                                        setIsMenuOpen(false);
-                                    }}
-                                    className={`w-full text-left px-4 py-3 rounded-xl transition-all flex items-center ${
-                                        isActive(item.path)
-                                            ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg'
-                                            : 'text-gray-300 hover:bg-white/10'
-                                    }`}
-                                >
-                                    <span className="text-xl mr-3">
-                                        {item.icon}
-                                    </span>
-                                    <span className="font-medium">
-                                        {item.label}
-                                    </span>
-                                </button>
-                            ))}
-                        </div>
-                    </div>
-                </div>
-            )}
-
-            {/* Spacer for fixed navbar */}
-            <div className="h-20" />
-        </>
+            {/* Pomodoro Timer */}
+            <PomodoroTimer />
+        </div>
     );
 }

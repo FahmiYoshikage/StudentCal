@@ -19,6 +19,8 @@ export const AuthProvider = ({ children }) => {
             const userData = await authService.getCurrentUser();
             setUser(userData);
         } catch (error) {
+            // Backend not running or user not authenticated
+            console.log('No user session:', error.message);
             setUser(null);
         } finally {
             setLoading(false);

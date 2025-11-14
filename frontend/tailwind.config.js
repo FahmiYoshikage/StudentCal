@@ -10,6 +10,9 @@ export default {
                 'pink-primary': '#ec4899',
                 'blue-primary': '#3b82f6',
             },
+            backgroundImage: {
+                'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
+            },
             animation: {
                 gradient: 'gradient 3s ease infinite',
                 float: 'float 3s ease-in-out infinite',

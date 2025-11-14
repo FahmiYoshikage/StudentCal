@@ -4,7 +4,7 @@ import CourseForm from '../forms/CourseForm';
 import Modal from '../shared/Modal';
 import Loading from '../shared/Loading';
 import ErrorMessage from '../shared/ErrorMessage';
-import { useNotification } from '../../contexts/NotificationContext';
+import { useNotification } from '../../contexts/NotificationContext.jsx';
 
 // ============================================
 // CoursesPage Component
@@ -25,7 +25,7 @@ const CoursesPage = () => {
     const fetchCourses = async () => {
         try {
             setLoading(true);
-            const data = await coursesService.getAllCourses();
+            const data = await coursesService.getAll();
             setCourses(data);
             setError(null);
         } catch (err) {
@@ -48,10 +48,10 @@ const CoursesPage = () => {
     const handleSubmit = async (formData) => {
         try {
             if (editingCourse) {
-                await coursesService.updateCourse(editingCourse._id, formData);
+                await coursesService.update(editingCourse._id, formData);
                 success('Course updated successfully');
             } else {
-                await coursesService.createCourse(formData);
+                await coursesService.create(formData);
                 success('Course added successfully');
             }
             setShowModal(false);
@@ -66,7 +66,7 @@ const CoursesPage = () => {
             return;
 
         try {
-            await coursesService.deleteCourse(id);
+            await coursesService.delete(id);
             success('Course deleted successfully');
             fetchCourses();
         } catch (err) {
@@ -79,7 +79,7 @@ const CoursesPage = () => {
 
         try {
             setSyncing(true);
-            await coursesService.syncAllToCalendar();
+            await coursesService.sync();
             success('All courses synced successfully!');
             fetchCourses();
         } catch (err) {
@@ -274,3 +274,5 @@ const CoursesPage = () => {
         </div>
     );
 };
+
+export default CoursesPage;
